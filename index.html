@@ -42,6 +42,20 @@
     <!-- Ambient background glow -->
     <div class="fixed top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-500/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
 
+    <!-- Audio element with autoplay enabled -->
+    <audio id="bg-music" autoplay loop preload="auto">
+        <source src="https://raw.githubusercontent.com/wilim2/dulceteamo/main/contigo.mp3" type="audio/mpeg">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
+    <!-- Floating Music Toggle Button -->
+    <div class="fixed top-4 right-4 z-50">
+        <button id="music-toggle" onclick="toggleAudio()" class="flex items-center space-x-2 px-3.5 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs sm:text-sm text-amber-200 shadow-lg hover:bg-white/20 transition-all duration-300">
+            <span id="music-icon">🔇</span>
+            <span id="music-text">Pausar música</span>
+        </button>
+    </div>
+
     <!-- Main Wrapper -->
     <div class="relative z-10 max-w-xl w-full mx-auto my-auto flex flex-col items-center">
         
@@ -67,11 +81,11 @@
                     Nuestra Promesa
                 </h1>
 
-                <p class="font-serif text-base sm:text-lg md:text-xl leading-relaxed text-gray-200 italic font-light">
+                <p class="font-serif text-base sm:text-lg md:text-xl leading-relaxed text-gray-200 italic font-light mb-6">
                     "Que las estrellas, la luna y todo el universo, se den cuenta que te quiero, que prometo cuidarte y apoyarte, que mi corazón sea tu hogar, mis manos tu abrigo, tú la única mujer en mi corazón, la mujer que dios ha dado a mi vida, la que da luz y felicidad, prometo amarte, hoy y siempre, prometo que te haré mi esposa, te quiero amor."
                 </p>
 
-                <div class="mt-6 pt-5 border-t border-white/10 flex flex-col items-center justify-center space-y-2">
+                <div class="mt-4 pt-5 border-t border-white/10 flex flex-col items-center justify-center space-y-2">
                     <span class="text-xs sm:text-sm tracking-widest uppercase text-amber-300/80 font-medium">Dulce y Wilexis</span>
                     <div class="flex space-x-1.5 text-rose-400 text-sm">
                         💖
@@ -80,6 +94,63 @@
             </div>
         </div>
     </div>
+
+    <!-- Audio Control & Autoplay Script -->
+    <script>
+        const audio = document.getElementById('bg-music');
+        let isPlaying = true;
+
+        // Intentar reproducir al cargar la página
+        window.addEventListener('DOMContentLoaded', () => {
+            audio.play().then(() => {
+                isPlaying = true;
+                updateButtonState();
+            }).catch(error => {
+                // Si el navegador bloquea el autoplay, se activará con el primer toque en la pantalla
+                isPlaying = false;
+                updateButtonState();
+                console.log("Autoplay bloqueado por el navegador, esperando interacción del usuario.");
+            });
+        });
+
+        // Activar audio con el primer toque/clic en cualquier parte de la página si fue bloqueado
+        document.body.addEventListener('click', function initAudioOnce() {
+            if (!isPlaying) {
+                audio.play().then(() => {
+                    isPlaying = true;
+                    updateButtonState();
+                }).catch(e => console.log(e));
+            }
+            document.body.removeEventListener('click', initAudioOnce);
+        }, { once: true });
+
+        function toggleAudio() {
+            const musicText = document.getElementById('music-text');
+            const musicIcon = document.getElementById('music-icon');
+            
+            if (isPlaying) {
+                audio.pause();
+                isPlaying = false;
+            } else {
+                audio.play().then(() => {
+                    isPlaying = true;
+                }).catch(error => console.log(error));
+            }
+            updateButtonState();
+        }
+
+        function updateButtonState() {
+            const musicText = document.getElementById('music-text');
+            const musicIcon = document.getElementById('music-icon');
+            if (isPlaying) {
+                musicText.innerText = "Pausar música";
+                musicIcon.innerText = "🔇";
+            } else {
+                musicText.innerText = "Reproducir música";
+                musicIcon.innerText = "🎵";
+            }
+        }
+    </script>
 
     <!-- Starry Night Script (Soft fading stars) -->
     <script>
