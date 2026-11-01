@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promesa de Amor</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.5);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+        .animate-float {
+            animation: floatSlow 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="min-h-full bg-black text-white relative overflow-x-hidden flex flex-col justify-between py-6 px-4 sm:px-6">
+
+    <!-- Background Starry Night Canvas -->
+    <canvas id="stars-canvas" class="fixed inset-0 z-0 pointer-events-none"></canvas>
+
+    <!-- Ambient background glow -->
+    <div class="fixed top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-500/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
+
+    <!-- Main Wrapper -->
+    <div class="relative z-10 max-w-xl w-full mx-auto my-auto flex flex-col items-center">
+        
+        <!-- Header badge -->
+        <div class="mb-6 inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs sm:text-sm tracking-widest uppercase text-amber-200 shadow-lg animate-float">
+            <span>✨ Para mi futura esposa ✨</span>
+        </div>
+
+        <!-- Main Card containing the image and message -->
+        <div class="w-full bg-black/60 backdrop-blur-2xl border border-white/15 rounded-3xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.8)] transition-all duration-500 hover:border-amber-300/30">
+            
+            <!-- Illustration Container inside Card with Dark Gradient Fade -->
+            <div class="relative w-full h-[380px] sm:h-[480px] overflow-hidden bg-zinc-950 flex items-center justify-center">
+                <img src="https://raw.githubusercontent.com/wilim2/Public/refs/heads/main/1.png" alt="Manos formando un corazón bajo la luna" class="w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-700">
+                <!-- Dark gradient overlay fading down into the card body -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+            </div>
+
+            <!-- Message Section -->
+            <div class="px-6 sm:px-10 pb-8 pt-4 text-center relative z-10 -mt-6">
+                
+                <h1 class="font-serif text-2xl sm:text-3xl md:text-4xl font-bold tracking-wide mb-4 bg-gradient-to-r from-amber-100 via-white to-amber-200 bg-clip-text text-transparent">
+                    Nuestra Promesa
+                </h1>
+
+                <p class="font-serif text-base sm:text-lg md:text-xl leading-relaxed text-gray-200 italic font-light">
+                    "Que las estrellas, la luna y todo el universo, se den cuenta que te quiero, que prometo cuidarte y apoyarte, que mi corazón sea tu hogar, mis manos tu abrigo, tú la única mujer en mi corazón, la mujer que dios ha dado a mi vida, la que da luz y felicidad, prometo amarte, hoy y siempre, prometo que te haré mi esposa, te quiero amor."
+                </p>
+
+                <div class="mt-6 pt-5 border-t border-white/10 flex flex-col items-center justify-center space-y-2">
+                    <span class="text-xs sm:text-sm tracking-widest uppercase text-amber-300/80 font-medium">Dulce y Wilexis</span>
+                    <div class="flex space-x-1.5 text-rose-400 text-sm">
+                        💖
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Starry Night Script (Soft fading stars) -->
+    <script>
+        const canvas = document.getElementById('stars-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let stars = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Star {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = Math.random() * 2.2 + 0.5;
+                this.alpha = Math.random();
+                this.maxAlpha = Math.random() * 0.7 + 0.3;
+                this.fadeSpeed = Math.random() * 0.008 + 0.002;
+                this.fadingOut = Math.random() > 0.5;
+                this.color = Math.random() > 0.3 ? '#ffffff' : '#ffe0b2';
+            }
+
+            update() {
+                if (this.fadingOut) {
+                    this.alpha -= this.fadeSpeed;
+                    if (this.alpha <= 0.05) {
+                        this.fadingOut = false;
+                        this.x = Math.random() * width;
+                        this.y = Math.random() * height;
+                    }
+                } else {
+                    this.alpha += this.fadeSpeed;
+                    if (this.alpha >= this.maxAlpha) {
+                        this.fadingOut = true;
+                    }
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, Math.min(1, this.alpha));
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        const starCount = Math.floor((window.innerWidth * window.innerHeight) / 4000);
+        for (let i = 0; i < Math.max(60, Math.min(starCount, 150)); i++) {
+            stars.push(new Star());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            stars.forEach(star => {
+                star.update();
+                star.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
