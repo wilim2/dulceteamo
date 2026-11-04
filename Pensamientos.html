@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dulce mi Amor</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #090a0f;
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Fondo animado de estrellas */
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle var(--duration) infinite ease-in-out;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    .container {
+      padding: 40px 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+      box-sizing: border-box;
+      z-index: 1;
+    }
+
+    h1 {
+      font-size: 3em;
+      color: #b19cd9;
+      margin-bottom: 5px;
+      text-shadow: 0 0 20px rgba(177, 156, 217, 0.6);
+    }
+
+    .subtitle {
+      font-size: 1.3em;
+      margin-bottom: 40px;
+      color: #d8b4fe;
+    }
+
+    /* Estilo Carta Estelar / Glassmorphism original */
+    .star-card {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(216, 180, 254, 0.2);
+      border-radius: 20px;
+      padding: 40px 30px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+      margin-bottom: 30px;
+      position: relative;
+    }
+
+    .star-card::before {
+      content: "✨";
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 1.2em;
+      opacity: 0.7;
+    }
+
+    .love-messages {
+      font-size: 1.7em;
+      color: #f3e8ff;
+      line-height: 1.5;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-shadow: 0 0 10px rgba(243, 232, 255, 0.3);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      opacity: 1;
+      transform: translateY(0);
+      margin-bottom: 25px;
+    }
+
+    .love-messages.fade-out {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
+    .button {
+      background: linear-gradient(135deg, #8b5cf6, #a855f7);
+      color: white;
+      font-size: 1.4em;
+      padding: 16px 35px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+      transition: all 0.3s;
+      margin-bottom: 25px;
+    }
+
+    .button:hover {
+      transform: scale(1.05);
+      background: linear-gradient(135deg, #7c3aed, #9333ea);
+      box-shadow: 0 15px 30px rgba(139, 92, 246, 0.6);
+    }
+
+    /* Reproductor de Nota de Voz Estilizado */
+    .voice-note-container {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(216, 180, 254, 0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .voice-note-label {
+      font-size: 1.1em;
+      color: #d8b4fe;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    audio {
+      width: 100%;
+      max-width: 400px;
+      border-radius: 30px;
+      outline: none;
+    }
+
+    /* Sección de Fotos Estilo Pegatinas / Polaroid */
+    .gallery-section {
+      margin-top: 50px;
+      margin-bottom: 50px;
+    }
+
+    .gallery-title {
+      font-size: 1.8em;
+      color: #d8b4fe;
+      margin-bottom: 25px;
+    }
+
+    .polaroid-container {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .polaroid {
+      background: #fff;
+      padding: 12px 12px 35px 12px;
+      border-radius: 6px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+      width: 200px;
+      transform: rotate(var(--rot));
+      transition: transform 0.3s, z-index 0.3s;
+      position: relative;
+    }
+
+    .polaroid:hover {
+      transform: scale(1.08) rotate(0deg) !important;
+      z-index: 10;
+    }
+
+    .polaroid::before {
+      content: "";
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 2px;
+    }
+
+    .polaroid img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+
+    .polaroid p {
+      color: #333;
+      font-size: 1.1em;
+      font-family: 'Courier New', Courier, monospace;
+      margin: 12px 0 0 0;
+    }
+
+    footer {
+      padding: 20px;
+      color: rgba(255, 255, 255, 0.3);
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fondo de Estrellas -->
+  <div class="stars" id="starsContainer"></div>
+
+  <div class="container">
+    <h1>Te quiero Mi amor</h1>
+    <div class="subtitle">Te adoro, adoro todo de ti, con amor Wilexis</div>
+    
+    <!-- Tarjeta Estelar (Carta) -->
+    <div class="star-card">
+      <div class="love-messages" id="mensajeTexto">Haz clic en el botón para leer un pensamiento...</div>
+      <button class="button" onclick="siguienteMensaje()">✨ Siguiente Destello ✨</button>
+
+      <!-- Nota de Voz -->
+    <div class="voice-note-container">
+        <div class="voice-note-label">🎙️ Una nota de voz especial</div>
+        <audio controls>
+          <source src="https://github.com/wilim2/dulceteamo/raw/refs/heads/main/au.mp3" type="audio/mp3">
+          Tu navegador no soporta el elemento de audio.
+        </audio>
+      </div>
+    </div>
+
+    <!-- Sección de Fotos / Pegatinas -->
+    <div class="gallery-section">
+      <div class="gallery-title">Instantes Inolvidables 🌌</div>
+      <div class="polaroid-container">
+        
+        <!-- Foto 1 -->
+        <div class="polaroid" style="--rot: -4deg;">
+          <img src="https://raw.githubusercontent.com/wilim2/dulceteamo/main/1.png" alt="Momento 1">
+          <p>Una luz única ✨</p>
+        </div>
+
+        <!-- Foto 2 -->
+        <div class="polaroid" style="--rot: 3.5deg;">
+          <img src="https://raw.githubusercontent.com/wilim2/dulceteamo/main/2.png" alt="Momento 2">
+          <p>La belleza de ser usted 💫</p>
+        </div>
+
+        <!-- Foto 3 -->
+        <div class="polaroid" style="--rot: -2deg;">
+          <img src="https://raw.githubusercontent.com/wilim2/dulceteamo/main/3.png" alt="Momento 3">
+          <p>Inspiración pura 🌙</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <footer>Con amor Wilexis</footer>
+
+  <script>
+    // Generar estrellas aleatorias en el fondo
+    const starsContainer = document.getElementById("starsContainer");
+    const numStars = 100;
+
+    for (let i = 0; i < numStars; i++) {
+      const star = document.createElement("div");
+      star.className = "star";
+      const size = Math.random() * 3 + 1 + "px";
+      star.style.width = size;
+      star.style.height = size;
+      star.style.top = Math.random() * 100 + "%";
+      star.style.left = Math.random() * 100 + "%";
+      star.style.setProperty('--duration', (Math.random() * 3 + 2) + "s");
+      star.style.animationDelay = (Math.random() * 5) + "s";
+      starsContainer.appendChild(star);
+    }
+
+    // Tus frases originales + las nuevas inspiradas en sus ojos, su fuerza y tu admiración
+    const mensajesOriginales = [
+      "Amo estar a tu lado.",
+      "Amo conocer de ti.",
+      "Amo descubrir cada parte de ti.",
+      "Amo ser parte de tu vida y aprender más de ti.",
+      "Valoro mucho tu tiempo y poder admirar el mundo desde una perspectiva diferente a tu lado.",
+      "Haces que mi corazón brinque cada vez que estoy a tu lado.",
+      "Te admiro muchísimo mi amor, admiro la mujer que eres.",
+      "Estoy completamente enamorado de ti.",
+      "Amo tu sonrisa, estar a tu lado, cada detalle de ti.",
+      "Un día te haré mi esposa <3.",
+      "Haces que el mundo sea un lugar mejor.",
+      "Adoro cada día, cada noche que pasamos juntos.",
+      "Me pierdo completamente en tus ojos, tienen la mirada más hermosa del mundo.",
+      "Admiro la fuerza tan increíble que tienes ante todo, eres una mujer de admirar.",
+      "La forma en la que enfrentas la vida con esa valentía me enamora cada día más.",
+      "Tus ojos brillan de una manera que ilumina cualquiera de mis días.",
+      "Eres una mujer sumamente fuerte y valiente, y eso es algo que amo y respeto con todo mi ser.",
+      "No hay mirada en este mundo que se compare con la tuya; es simplemente cautivadora."
+    ];
+
+    let colaMensajes = [];
+
+    // Función para mezclar aleatoriamente el arreglo (sistema de baraja sin repetir hasta agotar)
+    function barajarMensajes() {
+      colaMensajes = [...mensajesOriginales];
+      for (let i = colaMensajes.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [colaMensajes[i], colaMensajes[j]] = [colaMensajes[j], colaMensajes[i]];
+      }
+    }
+
+    function siguienteMensaje() {
+      const elemento = document.getElementById("mensajeTexto");
+
+      // Si la cola está vacía, vuelve a barajar todas las frases
+      if (colaMensajes.length === 0) {
+        barajarMensajes();
+      }
+      
+      // Efecto de desvanecimiento de salida
+      elemento.classList.add("fade-out");
+
+      setTimeout(() => {
+        // Sacar el siguiente mensaje de la cola barajada
+        const siguienteFrase = colaMensajes.pop();
+        elemento.textContent = siguienteFrase;
+
+        // Efecto de entrada
+        elemento.classList.remove("fade-out");
+      }, 300);
+    }
+  </script>
+</body>
+</html>
