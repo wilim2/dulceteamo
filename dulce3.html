@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.5">
+    <title>Nuestro Buzón de Corazones 💖</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.15); }
+        }
+        .star { animation: pulse-slow 4s infinite ease-in-out; }
+        @keyframes float-heart {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(3deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        .heart-card { animation: float-heart 4s ease-in-out infinite; }
+    </style>
+</head>
+<body class="bg-black text-slate-100 min-h-screen flex flex-col items-center justify-between p-4 relative font-sans overflow-x-hidden">
+
+    <!-- Fondo Negro Profundo con Estrellas Brillantes -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        <div class="star absolute top-10 left-12 w-1.5 h-1.5 bg-white rounded-full"></div>
+        <div class="star absolute top-28 right-20 w-2 h-2 bg-pink-300 rounded-full" style="animation-delay: 1s;"></div>
+        <div class="star absolute bottom-20 left-1/4 w-1.5 h-1.5 bg-white rounded-full" style="animation-delay: 2s;"></div>
+        <div class="star absolute top-1/2 right-12 w-2 h-2 bg-pink-200 rounded-full" style="animation-delay: 1.5s;"></div>
+        <div class="star absolute bottom-16 right-1/3 w-1.5 h-1.5 bg-white rounded-full" style="animation-delay: 0.7s;"></div>
+        <div class="star absolute top-1/3 left-1/4 w-2 h-2 bg-pink-300 rounded-full" style="animation-delay: 2.5s;"></div>
+    </div>
+
+    <!-- Reproductor de Música Ambiental Flotante (Con enlace directo a tu GitHub) -->
+    <div class="absolute top-4 left-4 z-30 flex items-center gap-2 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 px-3 py-1.5 rounded-full shadow-lg">
+        <button onclick="toggleAudio()" id="btn-audio" class="text-pink-400 hover:text-pink-300 transition cursor-pointer text-xs font-medium flex items-center gap-1.5">
+            🎵 <span id="texto-audio">Reproducir música</span>
+        </button>
+        <audio id="audio-fondo" loop>
+            <source src="https://raw.githubusercontent.com/wilim2/dulceteamo/main/contigo.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <!-- Cabecera -->
+    <header class="z-10 text-center mt-12 mb-4">
+        <h1 class="text-2xl md:text-3xl font-bold text-pink-400 tracking-wide flex items-center justify-center gap-2 drop-shadow-[0_0_10px_rgba(236,72,153,0.3)]">
+            💖 Nuestro Diario 💖
+        </h1>
+        <p class="text-xs text-slate-400 mt-1">Un rincón para guardar nuestros secretos, momentos y recuerdos.</p>
+    </header>
+
+    <!-- Botón para Abrir el Modal de Nuevo Mensaje -->
+    <div class="z-10 mb-6">
+        <button onclick="abrirModal()" class="px-6 py-2.5 bg-gradient-to-r from-pink-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 text-white rounded-full text-sm font-medium shadow-[0_0_20px_rgba(236,72,153,0.4)] transition cursor-pointer flex items-center gap-2">
+            ✨ Secretito ✨
+        </button>
+    </div>
+
+    <!-- Contenedor de la Cartelera de Corazones -->
+    <main class="z-10 w-full max-w-4xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-10 px-2" id="contenedor-cartelera">
+        <!-- Indicador de carga -->
+        <p class="text-slate-500 text-xs italic text-center col-span-full py-8">Cargando los latidos del cielo estelar... ✨</p>
+    </main>
+
+    <!-- Modal para Escribir Mensaje y Subir Imagen -->
+    <div id="modal-mensaje" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-zinc-900 border border-pink-500/40 rounded-2xl p-6 max-w-md w-full shadow-2xl my-auto">
+            <div class="flex justify-between items-center border-b border-zinc-800 pb-3 mb-4">
+                <h3 class="text-lg font-bold text-pink-300 flex items-center gap-2">💌 Nuevo Latido Estelar</h3>
+                <button onclick="cerrarModal()" class="text-slate-400 hover:text-white cursor-pointer">✕</button>
+            </div>
+            <form id="form-mensaje" onsubmit="guardarMensaje(event)" class="flex flex-col gap-4">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1 font-medium">¿Quién deja el mensaje?</label>
+                    <select id="remitente" class="w-full bg-black border border-zinc-700 rounded-xl p-2.5 text-sm text-slate-200 focus:outline-none focus:border-pink-500">
+                        <option value="Wilexis 💙">Wilexis 💙</option>
+                        <option value="Dulce 💖">Dulce 💖</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1 font-medium">Tu mensaje o recuerdo:</label>
+                    <textarea id="texto-nota" rows="3" required placeholder="Escribe algo bonito..." class="w-full bg-black border border-zinc-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-pink-500 resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1 font-medium">Foto o recuerdo (Opcional):</label>
+                    <input type="file" id="input-imagen" accept="image/*" class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-pink-600 file:text-white hover:file:bg-pink-500 cursor-pointer">
+                </div>
+                <button type="submit" id="btn-enviar" class="w-full py-3 bg-pink-600 hover:bg-pink-500 text-white rounded-xl text-sm font-medium transition cursor-pointer mt-2 shadow-[0_0_15px_rgba(236,72,153,0.3)]">
+                    Guardar en las estrellas 🌟
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Visor Detallado en Pantalla Completa (Imagen + Texto Expandido) -->
+    <div id="modal-visor" class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 cursor-pointer" onclick="cerrarVisor()">
+        <div class="relative max-w-lg w-full bg-zinc-900 border border-pink-500/50 rounded-2xl p-6 shadow-[0_0_40px_rgba(236,72,153,0.3)] flex flex-col gap-4 cursor-default" onclick="event.stopPropagation()">
+            <button onclick="cerrarVisor()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl font-bold cursor-pointer">✕</button>
+            
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-3 pr-6">
+                <span id="visor-remitente" class="text-xs font-semibold px-3 py-1 bg-black rounded-full text-pink-400 border border-zinc-800">Remitente</span>
+                <span id="visor-fecha" class="text-xs text-slate-500">Fecha</span>
+            </div>
+
+            <!-- Contenedor de Imagen Ampliada (si tiene) -->
+            <div id="visor-contenedor-img" class="hidden overflow-hidden rounded-xl border border-zinc-800 bg-black flex justify-center">
+                <img id="visor-imagen" src="" alt="Recuerdo ampliado" class="max-h-72 w-full object-contain">
+            </div>
+
+            <!-- Texto Completo Expandido -->
+            <div class="py-2">
+                <p id="visor-texto" class="text-slate-100 text-base leading-relaxed font-light whitespace-pre-wrap">Texto completo...</p>
+            </div>
+
+            <div class="pt-3 border-t border-zinc-800 flex justify-end">
+                <button onclick="cerrarVisor()" class="px-5 py-2 bg-pink-600 hover:bg-pink-500 text-white rounded-xl text-xs font-medium transition cursor-pointer">
+                    Cerrar recuerdo ✨
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie de página -->
+    <footer class="z-10 text-center text-xs text-slate-500 pb-4">
+        Hecho con todo mi amor para Dulce
+    </footer>
+
+    <!-- Firebase SDKs y Lógica -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Configuración de Firebase (Coloca aquí tus credenciales exactas)
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "dulce-d0caf.firebaseapp.com",
+            databaseURL: "https://dulce-d0caf-default-rtdb.firebaseio.com",
+            projectId: "dulce-d0caf",
+            storageBucket: "dulce-d0caf.appspot.com",
+            messagingSenderId: "TU_MESSAGING_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const mensajesRef = ref(db, 'buzon_amor');
+
+        // Escuchar cambios en tiempo real
+        onValue(mensajesRef, (snapshot) => {
+            const contenedor = document.getElementById('contenedor-cartelera');
+            contenedor.innerHTML = '';
+
+            if (!snapshot.exists()) {
+                contenedor.innerHTML = `<p class="text-slate-500 text-xs italic text-center col-span-full py-8">Aún no hay mensajes en el cielo. ¡Sé el primero en dejar uno! ✨</p>`;
+                return;
+            }
+
+            const data = snapshot.val();
+            const mensajesArray = Object.keys(data).map(key => ({
+                id: key,
+                ...data[key]
+            })).reverse();
+
+            mensajesArray.forEach((msg) => {
+                const card = document.createElement('div');
+                card.className = "heart-card bg-zinc-900/90 backdrop-blur-md border border-zinc-800 hover:border-pink-500/50 p-5 rounded-2xl shadow-xl flex flex-col justify-between transition-all duration-300 relative overflow-hidden group cursor-pointer";
+                
+                const textoEscapado = encodeURIComponent(msg.texto || '');
+                const remitenteEscapado = encodeURIComponent(msg.remitente || '');
+                const fechaEscapada = encodeURIComponent(msg.fecha || '');
+                const imagenEscapada = encodeURIComponent(msg.imagen || '');
+
+                card.onclick = () => abrirVisor(decodeURIComponent(remitenteEscapado), decodeURIComponent(textoEscapado), decodeURIComponent(fechaEscapada), decodeURIComponent(imagenEscapada));
+
+                let fechaStr = msg.fecha || "Hace un momento";
+
+                card.innerHTML = `
+                    <div class="absolute -top-6 -right-6 w-16 h-16 bg-pink-500/10 rounded-full blur-xl group-hover:bg-pink-500/20 transition-all"></div>
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-semibold px-2.5 py-1 bg-black rounded-full text-pink-400 border border-zinc-800">${msg.remitente}</span>
+                            <span class="text-[10px] text-slate-500">${fechaStr}</span>
+                        </div>
+                        ${msg.imagen ? `
+                            <div class="mb-3 overflow-hidden rounded-xl border border-zinc-800 bg-black flex justify-center relative">
+                                <img src="${msg.imagen}" alt="Recuerdo" class="max-h-32 w-full object-cover transition-transform duration-300 group-hover:scale-105">
+                            </div>` : ''}
+                        <p class="text-slate-200 text-sm leading-relaxed font-light line-clamp-3">"${msg.texto}"</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-zinc-800/80 flex justify-between items-center">
+                        <span class="text-[11px] text-pink-400 font-medium">🔍 Click para expandir</span>
+                        <span class="text-xs text-pink-400">💖</span>
+                    </div>
+                `;
+                contenedor.appendChild(card);
+            });
+        });
+
+        // Funciones del Modal de Nuevo Mensaje
+        window.abrirModal = function() {
+            document.getElementById('modal-mensaje').classList.remove('hidden');
+        }
+
+        window.cerrarModal = function() {
+            document.getElementById('modal-mensaje').classList.add('hidden');
+            document.getElementById('texto-nota').value = '';
+            document.getElementById('input-imagen').value = '';
+        }
+
+        // Funciones del Visor Expandido (Texto + Imagen)
+        window.abrirVisor = function(remitente, texto, fecha, imagen) {
+            document.getElementById('visor-remitente').innerText = remitente;
+            document.getElementById('visor-texto').innerText = `"${texto}"`;
+            document.getElementById('visor-fecha').innerText = fecha;
+
+            const contenedorImg = document.getElementById('visor-contenedor-img');
+            const visorImg = document.getElementById('visor-imagen');
+
+            if (imagen && imagen !== "null" && imagen !== "") {
+                visorImg.src = imagen;
+                contenedorImg.classList.remove('hidden');
+            } else {
+                visorImg.src = "";
+                contenedorImg.classList.add('hidden');
+            }
+
+            document.getElementById('modal-visor').classList.remove('hidden');
+        }
+
+        window.cerrarVisor = function() {
+            document.getElementById('modal-visor').classList.add('hidden');
+        }
+
+        // Control de Audio Ambiental con enlace directo a GitHub
+        let reproduciendo = false;
+        window.toggleAudio = function() {
+            const audio = document.getElementById('audio-fondo');
+            const textoAudio = document.getElementById('texto-audio');
+            if (reproduciendo) {
+                audio.pause();
+                textoAudio.innerText = "Reproducir música";
+                reproduciendo = false;
+            } else {
+                audio.play().then(() => {
+                    textoAudio.innerText = "Música sonando 🎶";
+                    reproduciendo = true;
+                }).catch(e => {
+                    alert("No se pudo reproducir el audio. Verifica que tu archivo esté activo en tu repositorio de GitHub.");
+                });
+            }
+        }
+
+        window.guardarMensaje = async function(e) {
+            e.preventDefault();
+            const remitente = document.getElementById('remitente').value;
+            const texto = document.getElementById('texto-nota').value;
+            const inputImagen = document.getElementById('input-imagen');
+            const btnEnviar = document.getElementById('btn-enviar');
+            const fechaStr = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+
+            btnEnviar.disabled = true;
+            btnEnviar.innerText = "Enviando al cielo... 🌟";
+
+            const enviarDatos = async (imagenBase64 = null) => {
+                try {
+                    await push(mensajesRef, {
+                        remitente: remitente,
+                        texto: texto,
+                        imagen: imagenBase64,
+                        fecha: fechaStr
+                    });
+                    cerrarModal();
+                } catch (error) {
+                    console.error("Error al guardar mensaje: ", error);
+                    alert("Hubo un error al enviar el mensaje.");
+                } finally {
+                    btnEnviar.disabled = false;
+                    btnEnviar.innerText = "Guardar en las estrellas 🌟";
+                }
+            };
+
+            if (inputImagen.files && inputImagen.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(uploadEvent) {
+                    enviarDatos(uploadEvent.target.result);
+                };
+                reader.readAsDataURL(inputImagen.files[0]);
+            } else {
+                enviarDatos(null);
+            }
+        }
+    </script>
+</body>
+</html>
