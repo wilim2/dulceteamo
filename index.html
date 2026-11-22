@@ -48,6 +48,32 @@
         <p class="text-xs text-slate-400 mt-1">Un rincón para guardar nuestros secretos, momentos y recuerdos.</p>
     </header>
 
+    <!-- Cuenta Regresiva de 7 Días -->
+    <div id="contenedor-countdown" class="z-10 mb-6 bg-zinc-900/80 backdrop-blur-md border border-pink-500/30 rounded-2xl px-5 py-3 shadow-[0_0_20px_rgba(236,72,153,0.15)] text-center">
+        <p class="text-[11px] text-pink-300 uppercase tracking-widest mb-2 font-semibold">⏳ Cuenta Regresiva ✨</p>
+        <div class="flex items-center justify-center gap-3 text-slate-100">
+            <div class="flex flex-col items-center bg-black/70 border border-zinc-800 rounded-xl px-3 py-1.5 min-w-[54px]">
+                <span id="cd-dias" class="text-lg md:text-xl font-bold text-pink-400">07</span>
+                <span class="text-[10px] text-slate-400">Días</span>
+            </div>
+            <span class="text-pink-500 font-bold">:</span>
+            <div class="flex flex-col items-center bg-black/70 border border-zinc-800 rounded-xl px-3 py-1.5 min-w-[54px]">
+                <span id="cd-horas" class="text-lg md:text-xl font-bold text-pink-400">00</span>
+                <span class="text-[10px] text-slate-400">Horas</span>
+            </div>
+            <span class="text-pink-500 font-bold">:</span>
+            <div class="flex flex-col items-center bg-black/70 border border-zinc-800 rounded-xl px-3 py-1.5 min-w-[54px]">
+                <span id="cd-minutos" class="text-lg md:text-xl font-bold text-pink-400">00</span>
+                <span class="text-[10px] text-slate-400">Min</span>
+            </div>
+            <span class="text-pink-500 font-bold">:</span>
+            <div class="flex flex-col items-center bg-black/70 border border-zinc-800 rounded-xl px-3 py-1.5 min-w-[54px]">
+                <span id="cd-segundos" class="text-lg md:text-xl font-bold text-pink-400">00</span>
+                <span class="text-[10px] text-slate-400">Seg</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Botón para Abrir el Modal de Contraseña / Nuevo Mensaje -->
     <div class="z-10 mb-6">
         <button onclick="solicitarAcceso()" class="px-6 py-2.5 bg-gradient-to-r from-pink-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 text-white rounded-full text-sm font-medium shadow-[0_0_20px_rgba(236,72,153,0.4)] transition cursor-pointer flex items-center gap-2">
@@ -161,6 +187,38 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const mensajesRef = ref(db, 'buzon_amor');
+
+        // ==========================================
+        // LÓGICA DE CUENTA REGRESIVA (7 DÍAS A 0)
+        // ==========================================
+        // Cambia esta fecha exacta por el momento en que quieres que llegue a 0,
+        // o déjala así para que tome 7 días desde una fecha fija:
+        const FECHA_OBJETIVO = new Date("2026-11-28T18:59:00").getTime();
+
+        function actualizarCuentaRegresiva() {
+            const ahora = new Date().getTime();
+            const diferencia = FECHA_OBJETIVO - ahora;
+
+            if (diferencia <= 0) {
+                document.getElementById('contenedor-countdown').innerHTML = `
+                    <p class="text-sm font-bold text-pink-400 animate-pulse">💖 ¡Llegó el gran momento! 💖</p>
+                `;
+                return;
+            }
+
+            const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+            const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
+
+            document.getElementById('cd-dias').innerText = String(dias).padStart(2, '0');
+            document.getElementById('cd-horas').innerText = String(horas).padStart(2, '0');
+            document.getElementById('cd-minutos').innerText = String(minutos).padStart(2, '0');
+            document.getElementById('cd-segundos').innerText = String(segundos).padStart(2, '0');
+        }
+
+        actualizarCuentaRegresiva();
+        setInterval(actualizarCuentaRegresiva, 1000);
 
         // Escuchar cambios en tiempo real
         onValue(mensajesRef, (snapshot) => {
